@@ -39,6 +39,7 @@ export default function HomeView() {
     const fetchData = async () => {
       try {
         const response = await axios.get<Device[]>('/api/devices')
+        if (!Array.isArray(response.data)) throw new Error('Invalid response')
         setDevices(response.data)
 
         // 평균 저수율 계산
@@ -270,7 +271,7 @@ export default function HomeView() {
       <header className="flex items-center justify-between px-6 pt-6 pb-4">
         <div>
           <h1 className="text-5xl font-semibold tracking-[0.08em] text-white">
-            안성 수위 통합 모니터링
+            수위 통합 모니터링
           </h1>
           <p className="mt-4 text-xl tracking-[0.08em] text-slate-100">
             주요 관측소 실시간 수위 · 임계치 · 통신 상태
