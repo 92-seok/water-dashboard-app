@@ -53,6 +53,34 @@ export default function HomeView() {
         }
       } catch (error) {
         console.error('데이터 로드 실패: ', error)
+        // API 실패 시 더미 데이터 표시
+        setDevices([
+          { CD_DIST_OBSV: '1', NM_DIST_OBSV: '저수지1', Data: 1.0, SeeLevelUse: 5.5, ErrorChk: 1 },
+          {
+            CD_DIST_OBSV: '2',
+            NM_DIST_OBSV: '저수지2',
+            Data: 10.65,
+            SeeLevelUse: 5.9,
+            ErrorChk: 1,
+          },
+          {
+            CD_DIST_OBSV: '3',
+            NM_DIST_OBSV: '저수지3',
+            Data: 5.12,
+            SeeLevelUse: 5.08,
+            ErrorChk: 1,
+          },
+          { CD_DIST_OBSV: '4', NM_DIST_OBSV: '저수지4', Data: 4.82, SeeLevelUse: 4.1, ErrorChk: 1 },
+          {
+            CD_DIST_OBSV: '5',
+            NM_DIST_OBSV: '저수지5',
+            Data: 2.36,
+            SeeLevelUse: 2.25,
+            ErrorChk: 0,
+          },
+          { CD_DIST_OBSV: '6', NM_DIST_OBSV: '저수지6', Data: 3.18, SeeLevelUse: 2.9, ErrorChk: 1 },
+        ])
+        setAveragePercent(95.8)
       }
     }
 
