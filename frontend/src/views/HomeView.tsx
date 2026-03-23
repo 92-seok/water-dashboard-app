@@ -31,7 +31,6 @@ export default function HomeView() {
 
     updateTime()
     const timeInterval = setInterval(updateTime, 1000)
-
     return () => clearInterval(timeInterval)
   }, [])
 
@@ -58,9 +57,9 @@ export default function HomeView() {
     }
 
     fetchData()
-    const dataInterval = setInterval(fetchData, 2000)
+    const dataInterval = setInterval(fetchData, 20000)
     return () => clearInterval(dataInterval)
-  })
+  }, [])
 
   // 우클릭 종료 모달
   useEffect(() => {
@@ -71,7 +70,6 @@ export default function HomeView() {
     }
 
     document.addEventListener('contextmenu', handleContextMenu)
-
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu)
     }
@@ -82,6 +80,7 @@ export default function HomeView() {
     if (!showExitModal) return
 
     if (countdown === 0) {
+      setShowExitModal(false)
       window.close()
       return
     }
@@ -120,62 +119,62 @@ export default function HomeView() {
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [])
 
-  // 게이지 색상 결정
-  const getFillColor = (percent: number) => {
-    if (percent >= 100) return '#ef4444'
-    if (percent >= 80) return '#f59e0b'
-    if (percent >= 60) return '#eab308'
-    return '#10b981'
-  }
-
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
+    <div className="flex min-h-screen flex-col bg-[#111827] bg-slate-800">
       {/* 헤더 */}
-      <header className="mb-8">
-        <div className="flex items-center justify-between text-white">
-          <h1 className="text-5xl text-bold">안성 수위 통합 대시보드</h1>
-          <div className="text-3xl text-gray-300">{currentTime}</div>
-          <div className="text-3xl font-semibold text-gray-300">
-            평균 저수율: {averagePercent.toFixed(1)}%
-          </div>
+      <header className="flex items-center justify-between px-6 pt-6 pb-4">
+        <div>
+          <h1 className="text-5xl font-semibold tracking-[0.08em] text-white">
+            안성 수위 통합 모니터링
+          </h1>
+          <p className="mt-4 text-xl tracking-[0.08em] text-slate-100">
+            주요 관측소 실시간 수위 · 임계치 · 통신 상태
+          </p>
+        </div>
+        <div className="text-right" onClick={toggleFullscreen}>
+          <div className="text-6xl font-medium text-white">{currentTime}</div>
+        </div>
+        <div className="text-right">
+          <p className="text-4xl font-medium text-white">총 저수율</p>
+          <p className="text-6xl font-semibold tracking-wide text-orange-400">
+            {averagePercent.toFixed(1)}%
+          </p>
         </div>
       </header>
 
       {/* 패널 그리드 */}
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-        {devices.map((device) => {
-          const waterLevel = parseInt(String(device.Data)) || 0
-          const threshold = parseInt(String(device.SeeLevelUse)) || 1
-          const fillPercent = (waterLevel / threshold) * 100
-          const badge = device.ErrorChk > 0 ? '정상' : '오류'
-          const fillColor = getFillColor(fillPercent)
+      <div className="flex-1 px-6 pb-6">
+        <div className="h-full select-none">
+          <div className="grid h-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-6 auto-rows-[1fr]">
+            {devices.map((device) => {
+              const waterLevel = parseInt(String(device.Data)) || 0
+              const threshold = parseInt(String(device.SeeLevelUse)) || 1
+              const fillPercent = (waterLevel / threshold) * 100
+              const badge = device.ErrorChk > 0 ? '정상' : '오류'
 
-          return (
-            <BluePanel
-              key={device.CD_DIST_OBSV}
-              title={device.NM_DIST_OBSV}
-              badge={badge}
-              waterLevel={waterLevel}
-              threshold={threshold}
-              fillPercent={fillPercent}
-              fillColor={fillColor}
-            ></BluePanel>
-          )
-        })}
+              return (
+                <div key={device.CD_DIST_OBSV} className="flex min-h-0 min-w-0">
+                  <BluePanel
+                    className="h-full w-full"
+                    title={device.NM_DIST_OBSV}
+                    badge={badge}
+                    waterLevel={waterLevel}
+                    threshold={threshold}
+                    fillPercent={fillPercent}
+                    fillColor="#2f7df6"
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       {/* 우클릭 종료 모달 */}
       {showExitModal && (
-        <div className="fixed inset-0 z-50 flex-items-center justify-center bg-black bg-opacity-70">
-          <div className="rounded-lg bg-white p-8 text-center shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold text-gray-900">프로그램 종료</h2>
-            <p className="mb-6 text-lg text-gray-700">{countdown}초 후 자동으로 종료됩니다.</p>
-            <button
-              onClick={() => setShowExitModal(false)}
-              className="rounded-lg bg-blue-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-600"
-            >
-              취소
-            </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+          <div className="w-200 rounded-2xl border border-white/20 bg-[#1f2937] px-10 py-10 text-center text-white shadow-2xl">
+            <p className="mt-3 text-3xl font-medium">{countdown}초 후 자동으로 종료됩니다.</p>
           </div>
         </div>
       )}
